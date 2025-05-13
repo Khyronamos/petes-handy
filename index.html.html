@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pete's Handyman - Moreno Valley Repairs & Home Improvements</title>
+    <meta name="description" content="Pete's Handyman: Expert home repair and improvement services for Moreno Valley & surrounding areas. Quality work, reliable service.">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <!-- GSAP Core & ScrollTrigger Plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        /* Copied from PrecisionTint, adapted for Handyman */
+        :root {
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F4F6F8;      /* Very Light Gray - Good for Handyman */
+            --bg-card: #FFFFFF;
+            --text-primary: #2C3E50;      /* Dark Slate Blue/Gray - Trustworthy */
+            --text-secondary: #566573;    /* Mid Gray */
+            --text-tertiary: #95A5A6;     /* Light Gray */
+            --primary-color: #3498DB;     /* Dependable Medium Blue */
+            --primary-color-dark: #2980B9;/* Darker Medium Blue */
+            --accent-color: #F39C12;      /* Practical Orange - For CTAs */
+            --accent-color-dark: #E67E22; /* Darker Orange */
+            --border-color: #DDE2E6;      /* Light Gray Border */
+            --shadow-sm: 0 2px 4px rgba(44, 62, 80, 0.06);
+            --shadow-md: 0 4px 10px rgba(44, 62, 80, 0.08);
+            --shadow-lg: 0 10px 25px rgba(44, 62, 80, 0.12);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-secondary);
+            line-height: 1.7;
+            overflow-x: hidden; /* Important for some GSAP animations */
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 0.75em;
+        }
+        h1 { opacity: 0; } /* Initially hidden for GSAP text animation */
+        h2 { font-size: 2rem; font-weight: 800; margin-bottom: 2.5rem; opacity: 0; transform: translateY(20px); } /* For GSAP scroll animation */
+        @media (min-width: 768px) { h2 { font-size: 2.5rem; } }
+
+        a { color: var(--primary-color); font-weight: 600; transition: color 0.3s ease; }
+        a:hover { color: var(--primary-color-dark); }
+
+        .gsap-fade-in { opacity: 0; }
+        .gsap-fade-in-up { opacity: 0; transform: translateY(30px); }
+
+        .hero-headline-word { display: inline-block; overflow: hidden; }
+        .hero-headline-word span { display: inline-block; }
+
+        button, .button {
+             display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+             padding: 0.8rem 1.75rem; border-radius: 6px; font-weight: 600; font-size: 0.95rem;
+             text-align: center; transition: all 0.3s ease; cursor: pointer;
+             border: none; box-shadow: var(--shadow-sm); font-family: 'Inter', sans-serif; white-space: nowrap;
+        }
+        button:not(.button-secondary):not(.button-accent),
+        .button:not(.button-secondary):not(.button-accent) {
+             background-color: var(--primary-color); color: white;
+        }
+        button:not(.button-secondary):not(.button-accent):hover,
+        .button:not(.button-secondary):not(.button-accent):hover {
+            background-color: var(--primary-color-dark); box-shadow: var(--shadow-md); transform: translateY(-2px);
+        }
+        .button-accent {
+             background-color: var(--accent-color); color: white;
+             font-weight: 700; /* More emphasis for urgent handyman CTAs */
+             box-shadow: 0 2px 8px rgba(243, 156, 18, 0.4);
+        }
+        .button-accent:hover {
+            background-color: var(--accent-color-dark); box-shadow: 0 4px 12px rgba(243, 156, 18, 0.5); transform: translateY(-2px);
+        }
+        .button-secondary {
+             background-color: transparent; color: var(--primary-color);
+             border: 2px solid var(--primary-color); box-shadow: none;
+        }
+        .button-secondary:hover {
+            background-color: rgba(52, 152, 219, 0.08);
+            transform: translateY(-2px); box-shadow: var(--shadow-sm);
+        }
+        button:focus, .button:focus { outline: none; box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.4); }
+        .button-accent:focus { box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.5); }
+
+        .service-card {
+            background-color: var(--bg-card); border-radius: 8px; padding: 2rem;
+            box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex; flex-direction: column; text-align: center; height: 100%;
+            opacity: 0; transform: translateY(30px);
+        }
+        .service-card:hover { transform: translateY(-5px) scale(1.02); box-shadow: var(--shadow-md); }
+        .service-card .icon-area { font-size: 2.25rem; color: var(--primary-color); margin-bottom: 1.25rem; }
+        .service-card h3 { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.75rem; }
+        .service-card p { color: var(--text-secondary); font-size: 0.95rem; flex-grow: 1; }
+
+        .trust-item {
+            text-align: center; padding: 1rem;
+            opacity: 0; transform: translateY(30px);
+        }
+        .trust-item .icon-area { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 1rem; }
+        .trust-item h3 { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; }
+        .trust-item p { font-size: 0.9rem; color: var(--text-secondary); }
+
+        #service-area ul { list-style: none; padding-left: 0; margin-top: 1rem; column-count: 2; column-gap: 2rem; }
+         #service-area li { position: relative; padding-left: 1.75rem; margin-bottom: 0.5rem; color: var(--text-secondary); }
+         #service-area li::before {
+            content: '\f3c5'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+            position: absolute; left: 0; top: 0.1em; font-size: 1rem;
+            color: var(--primary-color);
+         }
+         @media (max-width: 640px) { #service-area ul { column-count: 1; } }
+
+        .testimonial-card {
+            background-color: var(--bg-secondary); padding: 2rem; border-radius: 8px;
+            border-left: 4px solid var(--primary-color); margin-bottom: 2rem; box-shadow: var(--shadow-sm);
+            opacity: 0; transform: translateY(20px);
+        }
+        .testimonial-card p.quote-text { font-style: italic; color: var(--text-secondary); margin-bottom: 1rem; }
+        .testimonial-card .author-info { font-weight: 600; color: var(--text-primary); }
+        .testimonial-card .author-title { font-size: 0.85rem; color: var(--text-tertiary); }
+
+        .faq-item {
+            background-color: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 6px; margin-bottom: 1rem; overflow: hidden; box-shadow: var(--shadow-sm);
+            opacity: 0; transform: translateY(20px);
+        }
+        .faq-question { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 1.25rem 1.5rem; background: none; border: none; text-align: left; font-size: 1.05rem; font-weight: 600; color: var(--text-primary); cursor: pointer; transition: color 0.2s ease; }
+        .faq-question:hover { color: var(--primary-color); }
+        .faq-icon { transition: transform 0.3s ease; color: var(--primary-color); font-weight: bold; font-size: 1.2rem; margin-left: 1rem; }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding 0.4s ease-out; padding: 0 1.5rem; color: var(--text-secondary); line-height: 1.7; font-size: 0.95rem; border-top: 1px solid transparent; }
+        .faq-item.open { box-shadow: var(--shadow-md); }
+        .faq-item.open .faq-question { color: var(--primary-color); }
+        .faq-item.open .faq-icon { transform: rotate(135deg); }
+        .faq-item.open .faq-answer { padding: 1rem 1.5rem 1.5rem 1.5rem; border-top-color: var(--border-color); }
+
+         #hero, #why-us, #service-area, #contact { background-color: var(--bg-primary); }
+         #services, #testimonials, #faq, #gallery { background-color: var(--bg-secondary); } /* Gallery also light gray */
+
+         @keyframes shake { 0%{transform:translateX(0)}25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-4px)}100%{transform:translateX(0)} }
+         .shake-animation { animation: shake 0.4s ease-in-out; }
+
+         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(44, 62, 80, 0.75); animation: fadeInModalBg 0.3s ease-out; }
+         @keyframes fadeInModalBg { from { opacity: 0; } to { opacity: 1; } }
+         .modal-content { background-color: #fff; color: var(--text-primary); margin: 10% auto; padding: 2.5rem; border: none; width: 90%; max-width: 500px; border-radius: 8px; box-shadow: var(--shadow-lg); animation: fadeInModalContent 0.4s ease-out; }
+         @keyframes fadeInModalContent { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
+         .modal-header h2 { margin: 0; font-size: 1.4rem; font-weight: 700; color: var(--primary-color); }
+         .close-button { color: var(--text-tertiary); background: none; border: none; font-size: 2rem; font-weight: 500; cursor: pointer; transition: color 0.2s ease; line-height: 1; padding: 0.25rem; }
+         .close-button:hover, .close-button:focus { color: var(--text-primary); outline: none; }
+         .modal-body form label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-secondary); font-size: 0.9rem; }
+         .modal-body form input[type="text"], .modal-body form input[type="email"], .modal-body form input[type="tel"], .modal-body form textarea, .modal-body form select { width: 100%; padding: 0.8rem 1rem; margin-bottom: 1rem; border: 1px solid var(--border-color); background-color: var(--bg-secondary); color: var(--text-primary); border-radius: 6px; font-size: 1rem; transition: border-color 0.2s ease, box-shadow 0.2s ease; outline: none; }
+         .modal-body form input::placeholder, .modal-body form textarea::placeholder { color: var(--text-tertiary); }
+         .modal-body form input:focus, .modal-body form textarea:focus, .modal-body form select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15); background-color: #fff; }
+         .modal-body form textarea { resize: vertical; min-height: 100px; }
+         .modal-footer { text-align: right; padding-top: 1rem; border-top: 1px solid var(--border-color); margin-top: 1rem; }
+         .form-feedback { margin-top: 1rem; padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.9rem; display: none; font-weight: 500; }
+         .form-feedback.success { background-color: #e9fbf5; color: #155724; border: 1px solid #badbcc; display: block; }
+         .form-feedback.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
+         .form-feedback.loading { background-color: #e7f3ff; color: #0c5460; border: 1px solid #d1ecf1; display: block; }
+
+         #contact-form-main-container { opacity: 0; transform: translateY(30px); }
+         #contact-call-us { opacity: 0; transform: translateY(30px); }
+    </style>
+</head>
+<body class="bg-white font-inter text-gray-700">
+
+    <header class="bg-white/95 backdrop-blur-sm sticky top-0 z-50 shadow-sm border-b border-gray-100 gsap-fade-in">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="#" class="flex items-center text-xl font-bold text-[--text-primary]">
+                 <i class="fas fa-tools mr-2 text-[--primary-color]"></i> <!-- Handyman Tool Icon -->
+                <span class="font-['Inter',sans-serif] font-extrabold tracking-tight">Pete's Handyman</span>
+            </a>
+
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="#services" class="text-gray-600 hover:text-[--primary-color] transition duration-300 font-medium text-sm">Services</a>
+                <a href="#why-us" class="text-gray-600 hover:text-[--primary-color] transition duration-300 font-medium text-sm">Why Us</a>
+                <a href="#gallery" class="text-gray-600 hover:text-[--primary-color] transition duration-300 font-medium text-sm">Our Work</a>
+                <a href="#testimonials" class="text-gray-600 hover:text-[--primary-color] transition duration-300 font-medium text-sm">Reviews</a>
+                <a href="#contact" class="text-gray-600 hover:text-[--primary-color] transition duration-300 font-medium text-sm">Contact</a>
+                <button id="nav-quote-button" class="button button-accent text-sm !py-2">
+                    <i class="fas fa-hammer mr-1"></i> Get Free Estimate
+                </button>
+            </nav>
+
+            <div class="md:hidden"> <button id="hamburger-button" class="text-gray-600 focus:outline-none p-2" aria-label="Toggle Navigation" aria-expanded="false" aria-controls="mobile-menu"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg> </button> </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-100 py-3" role="menu">
+             <a href="#services" class="block px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-[--primary-color] transition duration-300 font-medium" role="menuitem">Services</a>
+             <a href="#why-us" class="block px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-[--primary-color] transition duration-300 font-medium" role="menuitem">Why Us</a>
+             <a href="#gallery" class="block px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-[--primary-color] transition duration-300 font-medium" role="menuitem">Our Work</a>
+             <a href="#testimonials" class="block px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-[--primary-color] transition duration-300 font-medium" role="menuitem">Reviews</a>
+             <a href="#contact" class="block px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-[--primary-color] transition duration-300 font-medium" role="menuitem">Contact</a>
+             <div class="px-4 py-3 mt-2 border-t border-gray-100">
+                 <button id="mobile-nav-quote-button" class="button button-accent w-full text-center">
+                     <i class="fas fa-hammer mr-1"></i> Get Free Estimate
+                 </button>
+                 <a href="tel:555-FIX-ITUP" id="mobile-call-button" class="button button-secondary w-full text-center mt-3">Call for Urgent Repairs</a>
+             </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="py-16 md:py-24">
+            <div class="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+                <div class="text-center md:text-left">
+                    <p class="text-lg font-bold text-[--accent-color] mb-2 gsap-fade-in" style="opacity:0;">CALL PETE'S HANDYMAN: (555) FIX-ITUP</p>
+                    <h1 id="hero-headline" class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-5 leading-tight">
+                       <!-- JS will populate this -->
+                    </h1>
+                    <p class="text-lg text-gray-600 mb-10 max-w-xl mx-auto md:mx-0 gsap-fade-in" style="opacity:0; animation-delay: 0.5s;">
+                       Reliable home repairs and improvements in Moreno Valley. Quality workmanship you can trust for all your household needs.
+                    </p>
+                    <div class="flex flex-col sm:flex-row justify-center md:justify-start gap-4 gsap-fade-in" style="opacity:0; animation-delay: 0.7s;">
+                        <button id="hero-quote-button" class="button button-accent">Get My Free Estimate</button> <!-- Changed to accent -->
+                        <a href="#services" class="button button-secondary"><i class="fas fa-list-check mr-1"></i> View Our Services</a>
+                    </div>
+                </div>
+                <div class="hidden md:block gsap-fade-in" style="opacity:0; animation-delay: 0.2s;">
+                     <img src="https://res.cloudinary.com/diyramdn0/image/upload/v1746834872/handyman_hard_at_work_v56tov.jpg" alt="Pete's Handyman performing a quality repair" class="rounded-lg shadow-md object-cover aspect-[4/3]">
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="py-16 md:py-24 px-4 bg-[--bg-secondary]">
+            <div class="container mx-auto max-w-6xl">
+                 <h2 class="text-center text-[--text-primary] section-title-gsap">Our Handyman Services</h2>
+                 <p class="text-center text-gray-600 max-w-2xl mx-auto mb-16 gsap-fade-in-up">
+                     No job too small! We handle a wide range of repair, maintenance, and improvement tasks for your Moreno Valley home.
+                 </p>
+                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 services-grid-gsap"> <!-- Changed to 3 cols for handyman -->
+                    <div class="service-card">
+                         <div class="icon-area"><i class="fas fa-hammer"></i></div>
+                         <h3>General Home Repairs</h3>
+                         <p>Fixing drywall, doors, windows, fences, and other common household issues.</p>
+                    </div>
+                    <div class="service-card">
+                         <div class="icon-area"><i class="fas fa-paint-roller"></i></div>
+                         <h3>Interior & Exterior Painting</h3>
+                         <p>Professional painting services, touch-ups, and staining for a fresh, new look.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="icon-area"><i class="fas fa-lightbulb"></i></div>
+                         <h3>Minor Electrical Work</h3>
+                         <p>Safely replacing light fixtures, ceiling fans, outlets, switches, and smoke detectors.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="icon-area"><i class="fas fa-wrench"></i></div>
+                         <h3>Minor Plumbing Repairs</h3>
+                         <p>Fixing leaky faucets, running toilets, installing new fixtures, and clearing small clogs.</p>
+                    </div>
+                     <div class="service-card">
+                         <div class="icon-area"><i class="fas fa-trowel-bricks"></i></div>
+                         <h3>Carpentry & Assembly</h3>
+                         <p>Bookshelf building, furniture assembly, trim work, shelving, and custom small projects.</p>
+                    </div>
+                     <div class="service-card">
+                         <div class="icon-area"><i class="fas fa-person-digging text-[--accent-color]"></i></div>
+                         <h3 class="!text-[--accent-color]">Yard & Gutter Maintenance</h3>
+                         <p>Gutter cleaning, minor landscaping tasks, and outdoor fixture repairs.</p>
+                    </div>
+                 </div>
+             </div>
+        </section>
+
+        <section id="why-us" class="py-16 md:py-24 px-4">
+             <div class="container mx-auto max-w-5xl">
+                 <h2 class="text-center text-[--text-primary] section-title-gsap">Why Choose Pete's Handyman?</h2>
+                 <p class="text-center text-gray-600 max-w-2xl mx-auto mb-16 gsap-fade-in-up">
+                     Your reliable and skilled local handyman service in Moreno Valley.
+                 </p>
+                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 why-us-grid-gsap"> <!-- Changed to 3 cols -->
+                    <div class="trust-item">
+                         <div class="icon-area"><i class="fas fa-user-tie"></i></div>
+                         <h3>Skilled & Experienced</h3>
+                         <p>Knowledgeable professionals dedicated to quality workmanship.</p>
+                    </div>
+                    <div class="trust-item">
+                         <div class="icon-area"><i class="fas fa-clock"></i></div>
+                         <h3>Reliable & Punctual</h3>
+                         <p>We respect your time, show up as scheduled, and work efficiently.</p>
+                    </div>
+                    <div class="trust-item">
+                        <div class="icon-area"><i class="fas fa-handshake-angle"></i></div>
+                         <h3>Fair & Transparent Pricing</h3>
+                         <p>Honest, upfront estimates with no surprise fees. Quality work at fair rates.</p>
+                    </div>
+                    <div class="trust-item">
+                        <div class="icon-area"><i class="fas fa-check-double"></i></div>
+                         <h3>Satisfaction Guaranteed</h3>
+                         <p>We stand behind our work and aim for your complete satisfaction on every job.</p>
+                    </div>
+                     <div class="trust-item">
+                         <div class="icon-area"><i class="fas fa-map-marker-alt"></i></div>
+                         <h3>Local Moreno Valley Service</h3>
+                         <p>Proudly serving our community with friendly and dependable handyman services.</p>
+                    </div>
+                      <div class="trust-item">
+                          <div class="icon-area"><i class="fas fa-shield-alt"></i></div>
+                          <h3>Insured for Your Peace of Mind</h3>
+                          <p>We carry insurance so you can feel confident with us working in your home.</p>
+                      </div>
+                 </div>
+             </div>
+         </section>
+
+        <section id="gallery" class="py-16 md:py-24 px-4 bg-[--bg-secondary]">
+            <div class="container mx-auto text-center max-w-4xl">
+                <h2 class="text-[--text-primary] section-title-gsap">Our Handyman Work</h2>
+                <p class="text-gray-600 max-w-xl mx-auto mb-10 gsap-fade-in-up">A gallery of our completed projects in Moreno Valley.</p>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 gallery-grid-gsap">
+                    <img src="https://res.cloudinary.com/diyramdn0/image/upload/c_fill,g_auto,h_400,w_600/v1746834873/handyman_gallery_1_abcefg.jpg" alt="Repaired fence by Pete's Handyman" class="rounded-lg shadow-md aspect-video object-cover">
+                    <img src="https://res.cloudinary.com/diyramdn0/image/upload/c_fill,g_auto,h_400,w_600/v1746834874/handyman_gallery_2_hijklm.jpg" alt="Newly painted room by Pete's Handyman" class="rounded-lg shadow-md aspect-video object-cover">
+                    <img src="https://res.cloudinary.com/diyramdn0/image/upload/c_fill,g_auto,h_400,w_600/v1746834875/handyman_gallery_3_nopqrs.jpg" alt="Assembled furniture by Pete's Handyman" class="rounded-lg shadow-md aspect-video object-cover">
+                    <img src="https://res.cloudinary.com/diyramdn0/image/upload/c_fill,g_auto,h_400,w_600/v1746834876/handyman_gallery_4_tuvwxy.jpg" alt="Installed light fixture by Pete's Handyman" class="rounded-lg shadow-md aspect-video object-cover">
+                    <img src="https://res.cloudinary.com/diyramdn0/image/upload/c_fill,g_auto,h_400,w_600/v1746834877/handyman_gallery_5_abcdef.jpg" alt="Repaired faucet by Pete's Handyman" class="rounded-lg shadow-md aspect-video object-cover">
+                    <img src="https://res.cloudinary.com/diyramdn0/image/upload/c_fill,g_auto,h_400,w_600/v1746834878/handyman_gallery_6_ghijkl.jpg" alt="Cleaned gutters by Pete's Handyman" class="rounded-lg shadow-md aspect-video object-cover">
+                </div>
+            </div>
+        </section>
+
+
+        <section id="testimonials" class="py-16 md:py-24 px-4 bg-[--bg-primary]">
+             <div class="container mx-auto max-w-3xl">
+                <h2 class="text-center text-[--text-primary] section-title-gsap">What Moreno Valley Says</h2>
+                <div class="mt-12 space-y-6 testimonials-gsap">
+                    <div class="testimonial-card">
+                         <p class="quote-text">"Pete's Handyman is fantastic! Fixed a leaky pipe and installed a new ceiling fan for me. Very professional and prices were fair. Will definitely call them again for future projects in Moreno Valley."</p>
+                         <p class="author-info">Jessica M.</p>
+                         <p class="author-title">Homeowner, Moreno Valley</p>
+                     </div>
+                     <div class="testimonial-card">
+                         <p class="quote-text">"Needed some drywall patching and painting done before moving out. Pete's Handyman did an excellent job, very clean and quick. Made the place look brand new!"</p>
+                         <p class="author-info">David R.</p>
+                         <p class="author-title">Resident, Moreno Valley</p>
+                     </div>
+                 </div>
+             </div>
+        </section>
+
+        <section id="faq" class="py-16 md:py-24 px-4 bg-[--bg-secondary]">
+            <div class="container mx-auto max-w-3xl">
+                <h2 class="text-center text-[--text-primary] section-title-gsap">Handyman FAQs</h2>
+                <div class="faq-items-gsap">
+                    <div class="faq-item">
+                        <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-1"> <span>What types of jobs do you handle?</span> <span class="faq-icon">+</span> </button>
+                        <div id="faq-answer-1" class="faq-answer" role="region" aria-hidden="true"> <p>We handle a wide variety of home repairs and improvements in Moreno Valley, including minor plumbing and electrical, carpentry, painting, assembly, drywall repair, fixture installation, and general maintenance tasks.</p> </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-2"> <span>Are you licensed and insured?</span> <span class="faq-icon">+</span> </button>
+                        <div id="faq-answer-2" class="faq-answer" role="region" aria-hidden="true"> <p>Yes, Pete's Handyman Services is fully insured for your peace of mind. We comply with all local regulations in Moreno Valley and surrounding areas.</p> </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-3"> <span>How do you charge?</span> <span class="faq-icon">+</span> </button>
+                        <div id="faq-answer-3" class="faq-answer" role="region" aria-hidden="true"> <p>We provide free, upfront estimates for most jobs. For smaller tasks, an hourly rate with a minimum charge may apply. We always ensure transparent pricing before starting work.</p> </div>
+                    </div>
+                     <div class="faq-item">
+                        <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-4"> <span>Do I need to provide materials?</span> <span class="faq-icon">+</span> </button>
+                        <div id="faq-answer-4" class="faq-answer" role="region" aria-hidden="true"> <p>You can provide materials, or we can source them for you. This will be discussed during the estimate. Material costs will be clearly itemized.</p> </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-16 md:py-24 px-4">
+             <div class="container mx-auto max-w-4xl text-center">
+                 <h2 class="text-[--text-primary] section-title-gsap">Get Your Moreno Valley Home Projects Done!</h2>
+                 <p class="text-lg text-gray-600 mb-10 gsap-fade-in-up">
+                     Ready for reliable handyman services? Contact Pete's Handyman today!
+                 </p>
+                 <div id="contact-form-main-container" class="bg-white p-8 md:p-12 rounded-lg shadow-lg max-w-2xl mx-auto text-left border border-[--border-color]">
+                     <h3 class="text-xl font-semibold text-center mb-6">Request Free Estimate</h3>
+                     <form class="space-y-5" action="#" method="POST" id="contact-form-main">
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                             <div>
+                                 <label for="contact-name" class="block text-gray-600 text-sm font-semibold mb-1">Name</label>
+                                 <input type="text" id="contact-name" name="name" required class="appearance-none border border-gray-300 rounded-md w-full py-2.5 px-3 bg-gray-50 text-gray-800 leading-tight focus:outline-none focus:border-[--primary-color] focus:bg-white">
+                             </div>
+                              <div>
+                                 <label for="contact-phone" class="block text-gray-600 text-sm font-semibold mb-1">Phone</label>
+                                 <input type="tel" id="contact-phone" name="phone" required class="appearance-none border border-gray-300 rounded-md w-full py-2.5 px-3 bg-gray-50 text-gray-800 leading-tight focus:outline-none focus:border-[--primary-color] focus:bg-white">
+                             </div>
+                         </div>
+                         <div>
+                             <label for="contact-email" class="block text-gray-600 text-sm font-semibold mb-1">Email (Optional)</label>
+                             <input type="email" id="contact-email" name="email" class="appearance-none border border-gray-300 rounded-md w-full py-2.5 px-3 bg-gray-50 text-gray-800 leading-tight focus:outline-none focus:border-[--primary-color] focus:bg-white">
+                         </div>
+                         <div>
+                             <label for="contact-message" class="block text-gray-600 text-sm font-semibold mb-1">Project Details (e.g., leaky faucet, paint room)</label>
+                             <textarea id="contact-message" name="message" rows="3" required class="appearance-none border border-gray-300 rounded-md w-full py-2.5 px-3 bg-gray-50 text-gray-800 leading-tight focus:outline-none focus:border-[--primary-color] focus:bg-white resize-none" placeholder="Briefly describe the work you need done..."></textarea>
+                         </div>
+                         <div class="text-center pt-2">
+                             <button type="submit" class="button button-accent w-full">Submit Estimate Request</button>
+                         </div>
+                     </form>
+                 </div>
+                  <div id="contact-call-us" class="mt-12 text-gray-600">
+                     <p class="font-semibold text-lg">Or Call Us Directly for Immediate Assistance:</p>
+                     <p class="mt-2 text-2xl font-bold">
+                        <a href="tel:555-FIX-ITUP" class="text-[--primary-color] hover:text-[--primary-color-dark]">(555) FIX-ITUP</a>
+                     </p>
+                 </div>
+             </div>
+        </section>
+    </main>
+
+    <footer class="bg-[--bg-secondary] text-[--text-secondary] py-8 border-t border-[--border-color] gsap-fade-in">
+        <div class="container mx-auto px-4 text-center text-sm">
+            <p>© <span id="current-year"></span> Pete's Handyman. Expert Handyman Services. Serving Moreno Valley & Beyond.</p>
+        </div>
+    </footer>
+
+    <div id="quote-modal" class="modal" aria-hidden="true" aria-labelledby="quote-modal-title" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="quote-modal-title">Request Free Handyman Estimate</h2>
+                <button class="close-button" aria-label="Close modal">×</button>
+            </div>
+            <div class="modal-body">
+                 <p class="text-sm text-gray-600 mb-4">Tell us about your project, and we'll provide a personalized quote.</p>
+                <form id="quote-form" novalidate>
+                    <label for="modal-name">Name:</label>
+                    <input type="text" id="modal-name" name="name" required aria-required="true">
+                    <label for="modal-phone">Phone:</label>
+                    <input type="tel" id="modal-phone" name="phone" required aria-required="true">
+                    <label for="modal-email">Email (Optional):</label>
+                    <input type="email" id="modal-email" name="email">
+                    <label for="modal-service">Project / Repair Details:</label>
+                    <textarea id="modal-service" name="details" required aria-required="true" rows="3" placeholder="e.g., Fix leaky kitchen faucet, Assemble furniture..."></textarea>
+                    <div id="quote-feedback" class="form-feedback"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="submit-quote" type="submit" form="quote-form" class="button button-accent w-full">Get My Estimate</button> <!-- Changed to accent -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            gsap.registerPlugin(ScrollTrigger);
+
+            const tlHero = gsap.timeline({ defaults: { ease: "power2.out" } });
+            const heroHeadline = document.getElementById('hero-headline');
+            // UPDATED HEADLINE TEXT
+            const heroHeadlineText = "Your Trusted Handyman for Moreno Valley Home Repairs.";
+            heroHeadline.innerHTML = heroHeadlineText.split(' ').map(word => `<span class="hero-headline-word"><span>${word}</span></span>`).join(' ');
+
+            tlHero
+                .to(heroHeadline, { opacity: 1, duration: 0.1 })
+                .from(".hero-headline-word span", { yPercent: 100, stagger: 0.08, duration: 0.6, delay: 0.2 })
+                .fromTo(".gsap-fade-in", { opacity: 0, y: 10 }, { opacity: 1, y: 0, stagger: 0.2, duration: 0.5 }, "-=0.5");
+
+            gsap.utils.toArray(".section-title-gsap").forEach(title => {
+                gsap.to(title, {
+                    opacity: 1, y: 0, duration: 0.6,
+                    scrollTrigger: { trigger: title, start: "top 85%", toggleActions: "play none none none" }
+                });
+            });
+
+            gsap.utils.toArray(".gsap-fade-in-up").forEach(elem => {
+                gsap.fromTo(elem, { opacity: 0, y: 30 }, {
+                    opacity: 1, y: 0, duration: 0.6,
+                    scrollTrigger: { trigger: elem, start: "top 85%", toggleActions: "play none none none" }
+                });
+            });
+
+            gsap.to(".service-card", {
+                opacity: 1, y: 0, stagger: 0.15, duration: 0.5,
+                scrollTrigger: { trigger: ".services-grid-gsap", start: "top 75%", toggleActions: "play none none none" }
+            });
+
+            gsap.to(".trust-item", {
+                opacity: 1, y: 0, stagger: 0.15, duration: 0.5,
+                scrollTrigger: { trigger: ".why-us-grid-gsap", start: "top 75%", toggleActions: "play none none none" }
+            });
+            
+             gsap.from(".gallery-grid-gsap img", {
+                opacity: 0, scale: 0.8, y: 30, stagger: 0.1, duration: 0.5,
+                scrollTrigger: { trigger: ".gallery-grid-gsap", start: "top 80%", toggleActions: "play none none none" }
+            });
+
+            gsap.to(".testimonial-card", {
+                opacity: 1, y: 0, stagger: 0.2, duration: 0.6,
+                scrollTrigger: { trigger: ".testimonials-gsap", start: "top 80%", toggleActions: "play none none none" }
+            });
+            
+            gsap.to(".faq-item", {
+                opacity: 1, y: 0, stagger: 0.1, duration: 0.5,
+                scrollTrigger: { trigger: ".faq-items-gsap", start: "top 80%", toggleActions: "play none none none" }
+            });
+
+            gsap.to("#contact-form-main-container", {
+                opacity: 1, y: 0, duration: 0.7,
+                scrollTrigger: { trigger: "#contact-form-main-container", start: "top 80%", toggleActions: "play none none none" }
+            });
+            gsap.to("#contact-call-us", {
+                opacity: 1, y: 0, duration: 0.7, delay: 0.2,
+                scrollTrigger: { trigger: "#contact-call-us", start: "top 85%", toggleActions: "play none none none" }
+            });
+            
+            gsap.from("footer.gsap-fade-in", {
+                opacity: 0, y: 20, duration: 0.6,
+                 scrollTrigger: { trigger: "footer.gsap-fade-in", start: "top 95%", toggleActions: "play none none none" }
+            });
+
+            const currentYear = new Date().getFullYear();
+            const yearSpan = document.getElementById('current-year');
+            if (yearSpan) yearSpan.textContent = currentYear;
+
+            const quoteModal = document.getElementById('quote-modal');
+            const openQuoteButtons = document.querySelectorAll('#hero-quote-button, #mobile-quote-button, #nav-quote-button, #mobile-nav-quote-button');
+            const closeButtons = document.querySelectorAll('.modal .close-button');
+            
+            openModal = (modalElement) => { if (!modalElement) return; modalElement.style.display = 'block'; modalElement.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden'; const firstFocusableElement = modalElement.querySelector('input, button, textarea, select, a[href]'); if (firstFocusableElement) firstFocusableElement.focus(); };
+            closeModal = (modalElement) => { if (!modalElement) return; const submitButton = modalElement.querySelector('button[type="submit"]'); if (submitButton && submitButton.textContent.toLowerCase().includes('sending')) return; modalElement.style.display = 'none'; modalElement.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; };
+
+            openQuoteButtons.forEach(button => button.addEventListener('click', (e) => { e.preventDefault(); openModal(quoteModal); }));
+            closeButtons.forEach(button => button.addEventListener('click', () => closeModal(button.closest('.modal'))));
+            window.addEventListener('click', (event) => { if (event.target === quoteModal) closeModal(quoteModal); });
+            window.addEventListener('keydown', (event) => { if (event.key === 'Escape' && quoteModal && quoteModal.style.display === 'block') closeModal(quoteModal); });
+
+            const hamburgerButton = document.getElementById('hamburger-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuLinks = mobileMenu.querySelectorAll('a, button');
+            if (hamburgerButton && mobileMenu) {
+                hamburgerButton.addEventListener('click', () => { const isExpanded = hamburgerButton.getAttribute('aria-expanded') === 'true'; mobileMenu.classList.toggle('hidden'); hamburgerButton.setAttribute('aria-expanded', String(!isExpanded)); hamburgerButton.classList.add('shake-animation'); setTimeout(() => { hamburgerButton.classList.remove('shake-animation'); }, 400); });
+                mobileMenuLinks.forEach(link => { link.addEventListener('click', () => { if (link.tagName === 'A' || link.id === 'mobile-quote-button' || link.id === 'mobile-nav-quote-button' || link.classList.contains('button-accent')) { mobileMenu.classList.add('hidden'); hamburgerButton.setAttribute('aria-expanded', 'false'); } }); });
+            }
+
+            const quoteForm = document.getElementById('quote-form');
+            const submitQuoteButton = document.getElementById('submit-quote');
+            const feedbackDiv = document.getElementById('quote-feedback');
+            if (quoteForm && submitQuoteButton && feedbackDiv) {
+                 quoteForm.addEventListener('submit', (event) => {
+                     event.preventDefault();
+                     const name = quoteForm.querySelector('#modal-name').value.trim();
+                     const phone = quoteForm.querySelector('#modal-phone').value.trim();
+                     const details = quoteForm.querySelector('#modal-service').value.trim();
+                     if (!name || !phone || !details) { feedbackDiv.textContent = 'Please fill all required fields.'; feedbackDiv.className = 'form-feedback error'; return; }
+                     feedbackDiv.textContent = 'Submitting...'; feedbackDiv.className = 'form-feedback loading'; submitQuoteButton.disabled = true; submitQuoteButton.textContent = 'Sending...';
+                     setTimeout(() => { feedbackDiv.textContent = 'Estimate request sent! We will contact you soon.'; feedbackDiv.className = 'form-feedback success'; quoteForm.reset();
+                         setTimeout(() => { submitQuoteButton.disabled = false; submitQuoteButton.textContent = 'Get My Estimate'; }, 2500);
+                     }, 1500);
+                 });
+            }
+
+             const contactFormMain = document.getElementById('contact-form-main');
+             if (contactFormMain) {
+                 contactFormMain.addEventListener('submit', (event) => {
+                     event.preventDefault();
+                     const name = contactFormMain.querySelector('#contact-name').value.trim();
+                     const phone = contactFormMain.querySelector('#contact-phone').value.trim();
+                     const message = contactFormMain.querySelector('#contact-message').value.trim();
+                     if (!name || !phone || !message) { alert('Please fill all required fields in the contact form.'); return; }
+                     alert('Main contact form submitted (Simulation). Thanks!');
+                     contactFormMain.reset();
+                 });
+             }
+
+            const faqItems = document.querySelectorAll('.faq-item');
+             faqItems.forEach(item => {
+                const questionButton = item.querySelector('.faq-question'); const answerDiv = item.querySelector('.faq-answer'); const iconSpan = item.querySelector('.faq-icon');
+                if (questionButton && answerDiv && iconSpan) { questionButton.addEventListener('click', () => { const isOpening = !item.classList.contains('open'); faqItems.forEach(otherItem => { if (otherItem !== item && otherItem.classList.contains('open')) { otherItem.classList.remove('open'); otherItem.querySelector('.faq-question').setAttribute('aria-expanded', 'false'); otherItem.querySelector('.faq-answer').setAttribute('aria-hidden', 'true'); otherItem.querySelector('.faq-answer').style.maxHeight = null; otherItem.querySelector('.faq-icon').textContent = '+'; } }); item.classList.toggle('open'); questionButton.setAttribute('aria-expanded', isOpening); answerDiv.setAttribute('aria-hidden', !isOpening); if (isOpening) { answerDiv.style.maxHeight = answerDiv.scrollHeight + 'px'; iconSpan.textContent = '−'; } else { answerDiv.style.maxHeight = null; iconSpan.textContent = '+'; } });
+                    window.addEventListener('resize', () => { if (item.classList.contains('open')) { answerDiv.style.maxHeight = null; requestAnimationFrame(() => { answerDiv.style.maxHeight = answerDiv.scrollHeight + 'px'; }); } }); } });
+
+        }); // End DOMContentLoaded
+    </script>
+
+</body>
+</html>
